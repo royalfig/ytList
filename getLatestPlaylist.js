@@ -17,7 +17,6 @@ export async function getLatestPlaylist() {
       title: items[0].snippet.title,
       description: items[0].snippet.description,
     };
-    
   } catch (error) {
     console.log(error);
   }

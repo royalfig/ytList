@@ -1,112 +1,92 @@
 export function createPlaylistElementMarkup(
   title,
-  description,
   link,
   playListItems,
   humanReadableDuration,
-  videoData
+  videoData,
+  id
 ) {
   const songs = playListItems.map((song, idx) => {
-    console.log(song)
     return listTemplate(song, idx);
   });
 
   return `
-  
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Document</title>
-  </head>
-  <body>
-    <div class="sm-playlist">
-      <div class="sm-playlist-items"> 
-        <header class="sm-playlist-header">
-            <p class="sm-playlist-title">${title}</p>
-            <p class="sm-playlist-duration">${
-              playListItems.length
-            } Tracks / ${humanReadableDuration}</p>
-            <p class="sm-playlist-description">${description}</p>
-            <a class="sm-icon-button" href="${link}" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-collection-play-fill" viewBox="0 0 16 16">
-            <path d="M2.5 3.5a.5.5 0 0 1 0-1h11a.5.5 0 0 1 0 1h-11zm2-2a.5.5 0 0 1 0-1h7a.5.5 0 0 1 0 1h-7zM0 13a1.5 1.5 0 0 0 1.5 1.5h13A1.5 1.5 0 0 0 16 13V6a1.5 1.5 0 0 0-1.5-1.5h-13A1.5 1.5 0 0 0 0 6v7zm6.258-6.437a.5.5 0 0 1 .507.013l4 2.5a.5.5 0 0 1 0 .848l-4 2.5A.5.5 0 0 1 6 12V7a.5.5 0 0 1 .258-.437z"/>
-          </svg> Play</a>
-        </header>
-        
-        ${songs.join('')}
-      </div>
-      <div class="sm-playlist-content" id="player">
-
-      </div>  
+  <section class="sm-playlist-grid" data-playlist-id="${id}">
+    <div class="sm-playlist-text">
+        <h3><a href="${link}" target="_blank">${title}</a></h3>
+        <p>${playListItems.length} Tracks / ${humanReadableDuration}</p>
+        <ol class="sm-playlist-page sm-playlist-active">
+          ${songs.join("")}
+        </ol>
     </div>
+    <div class="sm-playlist-controls">
+      <div class="sm-playlist-cover-art" style="background-image: url(${
+        playListItems[0].thumbnail
+      })"></div>
+      <div class="sm-playlist-now-playing">
+        <p>${playListItems[0].title}</p>
+        <p>${playListItems[0].artist}</p>
+      </div>
 
-    <script>
-   
-      const playerContainer = document.querySelector('.sm-playlist-content');
-      const tag = document.createElement('script');
-      tag.src = 'https://www.youtube.com/iframe_api';
+      <div class="sm-playlist-buttons">
+        <button class="sm-playlist-button" data-control="previous" aria-label="Previous track">
+          <svg aria-hidden='true'>
+          <use href='#sm-back-icon'></use>
+          </svg>
+        </button>
+        
+        <button class="sm-playlist-button" data-control="play" aria-label="play">
+          <svg aria-hidden='true'>
+          <use href='#sm-play-icon'></use>
+          </svg>
+        </button>
 
-      const buttons = document.querySelectorAll('.sm-playlist-item');
+        <button class="sm-playlist-button" data-control="pause" aria-label="pause">
+          <svg aria-hidden='true'>
+          <use href='#sm-pause-icon'></use>
+          </svg>
+        </button>
 
-      document.head.append(tag);
+        <button class="sm-playlist-button" data-control="forward" aria-label="forward">
+          <svg aria-hidden='true'>
+          <use href='#sm-forward-icon'></use>
+          </svg>
+        </button>
+      </div>
 
-      function onYouTubeIframeAPIReady() {
-        const player = new YT.Player('player', {
-          height: '360',
-          width: '640',
-          playerVars: {
-            modestbranding: 1,
-            enablejsapi: 1,
-            list: 'PLnPe3mrvTpEzNINsV2kNqY_LTeNkdprdL',
-            listType: 'playlist',
-          },
+      <div class="sm-playlist-progress" data-volume="high">
+        <span class="sm-start-time">0:00</span>
+        <span class="sm-end-time">${playListItems[0].timestamp}</span>
+        <input type="range" id="progress" name="progress" min="0" max="100" value="100" />
+      </div>
 
-          events: {
-            onReady: onPlayerReady,
-            onStateChange: onPlayerStateChange,
-          },
-        });
+      <div class="sm-playlist-volume" data-volume="high">
+        <span class="sm-muted"><svg aria-label="muted" aria-hidden="true"><use href="#sm-mute-icon"></use></svg></span>
+        <span class="sm-low-volume"><svg aria-label="volume low" aria-hidden="true"><use href="#sm-volume-down"></use></svg></span>
+        <span class="sm-high-volume"><svg aria-label="volume high" aria-hidden="true"><use href="#sm-volume-up"></use></svg></span>
+        <input type="range" id="volume" name="volume" min="0" max="100" value="100" />
+      </div>
+    
 
-        function onPlayerReady() {
-          buttons.forEach((button) => {
-            button.addEventListener('click', () => {
-              currentSong = button.dataset.idx;
-           
-              player.playVideoAt(currentSong);
-            });
-          });
-        }
-
-        function onPlayerStateChange(event) {
-          let int;
-          if (event.data === 1) {
-          const currentSongIndex = player.getPlaylistIndex();
-          const currentSong = document.querySelector('button[data-idx="0"]');
-            int = setInterval(() => {
-            
-              const ratio = (player.getCurrentTime() / player.getDuration());
-              currentSong.style.background = \`linear-gradient(to right, #e74c3c \${ratio * 100}%, #fff \${ratio * 100}%)\`;
-              
-            }, 500);
-          } else {
-            clearInterval(int);
-        }
-      }
-    </script>
-    </body>
-    </html>`;
+    </div>
+    <div class="sm-playlist-iframe" id="player"></div>
+  </section>`;
 }
 
-export function listTemplate({ title, artist, id, thumbnail, idx, duration }) {
+export function listTemplate({
+  title,
+  artist,
+  id,
+  thumbnail,
+  idx,
+  timestamp,
+  color,
+}) {
   return `
-    <button class="sm-playlist-item" data-src="${id}" data-idx="${idx}">
-        <p class="sm-playlist-item-number">${idx + 1}</p>
-        <img src="${thumbnail}" alt="${title}" />
-        <div class="sm-playlist-item-info">
-            <p class="sm-playlist-item-title">${title}</p>
-            <p class="sm-playlist-item-artist">${artist}</p>
-            <p class="sm-playlist-item-duration">${duration}</p>
-        </div>
-    </button>`;
+  <li data-track="${(idx + 1).toString().padStart(2, "0")}" data-marker="▸">
+    <button class="sm-playlist-item" data-src="${id}" data-idx="${idx}" data-image-src="${thumbnail}" data-artist="${artist}" data-title="${title}" data-timestamp="${timestamp}" data-color="${color}">
+        <span class="sm-playlist-item-title">${title}</span>
+        <span class="sm-playlist-item-artist">${artist}</span>
+    </button>
+  </li>`;
 }
