@@ -2,11 +2,10 @@ import fs from "fs/promises";
 import { getLatestPlaylist } from "./getLatestPlaylist.js";
 import { getPlaylistItems } from "./getPlaylistItems.js";
 import { getVideo } from "./getVideo.js";
-import { createPlaylistElementMarkup, listTemplate } from "./templates.js";
+import { createPlaylistElementMarkup } from "./templates.js";
 import { createSongMarkup } from "./util.js";
 import { isoDuration, en } from "@musement/iso-duration";
 import { getColor } from "colorthief";
-import { get } from "http";
 
 isoDuration.setLocales(
   {
