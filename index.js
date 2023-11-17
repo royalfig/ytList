@@ -20,6 +20,7 @@ async function buildPlaylist() {
   const { id, title } = await getLatestPlaylist();
   const playlistUrl = `https://music.youtube.com/playlist?list=${id}`;
   const playlistItems = await getPlaylistItems(id);
+  console.log(JSON.stringify(playlistItems, null, 2))
   let videoIds = [];
 
   const songData = playlistItems.map((song, idx) => {
@@ -55,10 +56,6 @@ async function buildPlaylist() {
   );
 
   const playListItems = await playListPromises;
-  console.log(
-    "🚀 ~ file: index.js:57 ~ buildPlaylist ~ playListItems:",
-    playListItems
-  );
 
   const humanReadableDuration = isoDuration(totalDuration)
     .normalize()

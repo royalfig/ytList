@@ -12,6 +12,7 @@ export function formatArtistAndAlbum(str) {
 }
 
 export function createSongMarkup(item, idx) {
+  if (item.status?.privacyStatus === "private") throw new Error("Private video. Check your playlist.", item);
   const {
     snippet: {
       title,
